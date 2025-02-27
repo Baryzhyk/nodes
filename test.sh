@@ -1,10 +1,10 @@
 
 channel_logo() {
   echo -e '\033[0;31m'
-  echo -e ' '
-  echo -e '  '
+  echo -e 'sasha_postyt '
   echo -e ''
-  echo -e '\e[0m'
+  echo -e ''
+  echo -e ''
   echo -e "\n\nПодпишись на самый 4ekHyTbIu* канал в крипте @sasha_postyt [💸]"
 }
 
