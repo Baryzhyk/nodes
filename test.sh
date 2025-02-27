@@ -1,4 +1,4 @@
-
+#!/bin/bash
 channel_logo() {
   echo -e 'sasha_postyt '
   echo -e "\n\nПодпишись на самый 4ekHyTbIu* канал в крипте @sasha_postyt [💸]"
