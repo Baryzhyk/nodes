@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "-----------------------------------------------------------------------------"
-curl -s https://raw.githubusercontent.com/Baryzhyk/nodes/refs/heads/main/logo.sh
+curl -s https://raw.githubusercontent.com/Baryzhyk/nodes/refs/heads/main/logo.sh | bash
 echo "-----------------------------------------------------------------------------"
 download_node() {
   if [ -d "$HOME/.titanedge" ]; then
