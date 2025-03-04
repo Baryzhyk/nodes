@@ -40,11 +40,9 @@ animate_loading() {
     done
     echo ""
 }
-
 # Виклик функції анімації
 animate_loading
 echo ""
-
 }
 
 # Виклик функції анімації
