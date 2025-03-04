@@ -8,6 +8,7 @@ channel_logo() {
 # Функція для встановлення ноди
 install_node() {
   echo -e "Розпочинаємо встановлення ноди...\n"
+  sleep 1
 
   if [ -d "$HOME/.titanedge" ]; then
     echo -e "Папка .titanedge вже існує. Видаліть ноду та встановіть знову."
@@ -28,7 +29,7 @@ install_node() {
   echo -e "Всі порти вільні! Продовжуємо...\n"
 
   if ! command -v docker &> /dev/null; then
-    echo -e "⬇Встановлення Docker..."
+    echo -e "Встановлення Docker..."
     curl -fsSL https://get.docker.com -o get-docker.sh
     sudo sh get-docker.sh
     sudo usermod -aG docker $USER
@@ -38,7 +39,7 @@ install_node() {
   fi
 
   if ! command -v docker-compose &> /dev/null; then
-    echo -e "⬇Встановлення Docker-Compose..."
+    echo -e "Встановлення Docker-Compose..."
     sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
     sudo chmod +x /usr/local/bin/docker-compose
   else
@@ -51,6 +52,7 @@ install_node() {
 # Функція для запуску ноди
 launch_node() {
   echo -e "Запуск ноди...\n"
+  sleep 1
 
   docker ps -a --filter "ancestor=nezha123/titan-edge" --format "{{.ID}}" | xargs -r docker stop
   docker ps -a --filter "ancestor=nezha123/titan-edge" --format "{{.ID}}" | xargs -r docker rm
@@ -69,19 +71,22 @@ launch_node() {
 # Функція для перегляду логів
 view_logs() {
   echo -e "Перегляд логів ноди...\n"
+  sleep 1
   docker ps -a --filter "ancestor=nezha123/titan-edge" --format "{{.ID}}" | xargs -r docker logs
 }
 
 # Функція для перезапуску ноди
 restart_node() {
   echo -e "Перезапуск ноди...\n"
+  sleep 1
   docker ps -a --filter "ancestor=nezha123/titan-edge" --format "{{.ID}}" | xargs -r docker restart
   echo -e "Нода успішно перезапущена!\n"
 }
 
 # Функція для видалення ноди
 remove_node() {
-  echo -e "🗑 Видалення ноди...\n"
+  echo -e "Видалення ноди...\n"
+  sleep 1
 
   docker ps -a --filter "ancestor=nezha123/titan-edge" --format "{{.ID}}" | xargs -r docker stop
   docker ps -a --filter "ancestor=nezha123/titan-edge" --format "{{.ID}}" | xargs -r docker rm
@@ -94,6 +99,9 @@ remove_node() {
 # Головне меню
 while true; do
   channel_logo
+  echo -e "Завантажуємо меню...\n"
+  sleep 2
+
   CHOICE=$(whiptail --title "Меню керування нодою" \
     --menu "Оберіть дію:" 15 60 6 \
     "1" "Встановити ноду" \
@@ -103,6 +111,8 @@ while true; do
     "5" "Видалити ноду" \
     "6" "Вийти з скрипта" \
     3>&1 1>&2 2>&3)
+
+  clear
 
   case $CHOICE in
     1)
