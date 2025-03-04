@@ -31,10 +31,6 @@ install_dependencies() {
 # Відображення логотипу
 wget -qO- https://raw.githubusercontent.com/Baryzhyk/nodes/refs/heads/main/logo.sh | bash
 
-# Вивід привітального тексту за допомогою figlet
-echo -e "${PINK}$(figlet -w 150 -f standard "Softs by Gentleman")${NC}"
-echo -e "${PINK}$(figlet -w 150 -f standard "x WESNA")${NC}"
-
 # Функція анімації завантаження
 animate_loading() {
     for ((i = 1; i <= 5; i++)); do
