@@ -1,21 +1,17 @@
 #!/bin/bash
 
-# Функція для відображення логотипу
+# Функція для завантаження та відображення логотипу
 channel_logo() {
-  echo -e '\033[0;31m'
-  echo -e '┌┐ ┌─┐┌─┐┌─┐┌┬┐┬┬ ┬  ┌─┐┬ ┬┌┐ ┬┬  '
-  echo -e '├┴┐│ ││ ┬├─┤ │ │└┬┘  └─┐└┬┘├┴┐││  '
-  echo -e '└─┘└─┘└─┘┴ ┴ ┴ ┴ ┴   └─┘ ┴ └─┘┴┴─┘'
-  echo -e '\e[0m'
-  echo -e "\n\nПідпишись на найкращий канал у крипті @bogatiy_sybil [💸]"
+  bash <(curl -s https://raw.githubusercontent.com/Baryzhyk/nodes/refs/heads/main/logo.sh)
+  echo -e "\n\nПідпишись на найкращий крипто-канал @bogatiy_sybil [💸]\n"
 }
 
 # Функція для встановлення ноди
 install_node() {
-  echo -e "${BLUE}Розпочинаємо встановлення ноди...${NC}"
-  
+  echo -e "Розпочинаємо встановлення ноди...\n"
+
   if [ -d "$HOME/.titanedge" ]; then
-    echo -e "${RED}Папка .titanedge вже існує. Видаліть ноду та встановіть знову.${NC}"
+    echo -e "Папка .titanedge вже існує. Видаліть ноду та встановіть знову."
     return 0
   fi
 
@@ -25,42 +21,42 @@ install_node() {
   ports=(1234 55702 48710)
   for port in "${ports[@]}"; do
     if [[ $(lsof -i :"$port" | wc -l) -gt 0 ]]; then
-      echo -e "${RED}Помилка: порт $port зайнятий. Установка не можлива.${NC}"
+      echo -e "Помилка: порт $port зайнятий. Установка неможлива."
       exit 1
     fi
   done
 
-  echo -e "${GREEN}Всі порти вільні! Продовжуємо...${NC}"
-  
+  echo -e "Всі порти вільні! Продовжуємо...\n"
+
   if ! command -v docker &> /dev/null; then
-    echo -e "${YELLOW}Встановлення Docker...${NC}"
+    echo -e "⬇Встановлення Docker..."
     curl -fsSL https://get.docker.com -o get-docker.sh
     sudo sh get-docker.sh
     sudo usermod -aG docker $USER
     rm get-docker.sh
   else
-    echo -e "${GREEN}Docker вже встановлено.${NC}"
+    echo -e "Docker вже встановлено."
   fi
 
   if ! command -v docker-compose &> /dev/null; then
-    echo -e "${YELLOW}Встановлення Docker-Compose...${NC}"
+    echo -e "⬇Встановлення Docker-Compose..."
     sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
     sudo chmod +x /usr/local/bin/docker-compose
   else
-    echo -e "${GREEN}Docker-Compose вже встановлено.${NC}"
+    echo -e "Docker-Compose вже встановлено."
   fi
 
-  echo -e "${CYAN}Необхідні залежності встановлені. Запустіть ноду через меню.${NC}"
+  echo -e "Всі залежності встановлено. Запустіть ноду через меню.\n"
 }
 
 # Функція для запуску ноди
 launch_node() {
-  echo -e "${BLUE}Запуск ноди...${NC}"
-  
+  echo -e "Запуск ноди...\n"
+
   docker ps -a --filter "ancestor=nezha123/titan-edge" --format "{{.ID}}" | xargs -r docker stop
   docker ps -a --filter "ancestor=nezha123/titan-edge" --format "{{.ID}}" | xargs -r docker rm
 
-  echo -e "${YELLOW}Введіть ваш HASH:${NC}"
+  echo -e "Введіть ваш HASH:"
   read HASH
 
   docker run --network=host -d -v ~/.titanedge:$HOME/.titanedge nezha123/titan-edge
@@ -68,53 +64,45 @@ launch_node() {
 
   docker run --rm -it -v ~/.titanedge:$HOME/.titanedge nezha123/titan-edge bind --hash=$HASH https://api-test1.container1.titannet.io/api/v2/device/binding
   
-  echo -e "${GREEN}Нода успішно запущена!${NC}"
+  echo -e "Нода успішно запущена!\n"
+}
+
+# Функція для перегляду логів
+view_logs() {
+  echo -e "Перегляд логів ноди...\n"
+  docker ps -a --filter "ancestor=nezha123/titan-edge" --format "{{.ID}}" | xargs -r docker logs
+}
+
+# Функція для перезапуску ноди
+restart_node() {
+  echo -e "Перезапуск ноди...\n"
+  docker ps -a --filter "ancestor=nezha123/titan-edge" --format "{{.ID}}" | xargs -r docker restart
+  echo -e "Нода успішно перезапущена!\n"
 }
 
 # Функція для видалення ноди
 remove_node() {
-  echo -e "${BLUE}Видалення ноди...${NC}"
+  echo -e "🗑 Видалення ноди...\n"
 
   docker ps -a --filter "ancestor=nezha123/titan-edge" --format "{{.ID}}" | xargs -r docker stop
   docker ps -a --filter "ancestor=nezha123/titan-edge" --format "{{.ID}}" | xargs -r docker rm
 
   sudo rm -rf $HOME/.titanedge
 
-  echo -e "${GREEN}Ноду успішно видалено!${NC}"
-}
-
-# Функція для перегляду логів
-view_logs() {
-  echo -e "${BLUE}Перегляд логів ноди...${NC}"
-  docker ps -a --filter "ancestor=nezha123/titan-edge" --format "{{.ID}}" | xargs -r docker logs
-}
-
-# Функція для перезапуску ноди
-restart_node() {
-  echo -e "${BLUE}Перезапуск ноди...${NC}"
-  docker ps -a --filter "ancestor=nezha123/titan-edge" --format "{{.ID}}" | xargs -r docker restart
-  echo -e "${GREEN}Нода успішно перезапущена!${NC}"
-}
-
-# Функція для зупинки ноди
-stop_node() {
-  echo -e "${BLUE}Зупинка ноди...${NC}"
-  docker ps -a --filter "ancestor=nezha123/titan-edge" --format "{{.ID}}" | xargs -r docker stop
-  echo -e "${GREEN}Нода зупинена!${NC}"
+  echo -e "Ноду успішно видалено!\n"
 }
 
 # Головне меню
 while true; do
   channel_logo
-  CHOICE=$(whiptail --title "Меню дій" \
+  CHOICE=$(whiptail --title "Меню керування нодою" \
     --menu "Оберіть дію:" 15 60 6 \
-    "1" "🛠 Встановити ноду" \
-    "2" "🚀 Запустити ноду" \
-    "3" "📜 Переглянути логи" \
-    "4" "🔄 Перезапустити ноду" \
-    "5" "⛔ Зупинити ноду" \
-    "6" "🗑 Видалити ноду" \
-    "7" "❌ Вихід" \
+    "1" "Встановити ноду" \
+    "2" "Запустити ноду" \
+    "3" "Переглянути логи" \
+    "4" "Перезапустити ноду" \
+    "5" "Видалити ноду" \
+    "6" "Вийти з скрипта" \
     3>&1 1>&2 2>&3)
 
   case $CHOICE in
@@ -131,17 +119,14 @@ while true; do
       restart_node
       ;;
     5)
-      stop_node
-      ;;
-    6)
       remove_node
       ;;
-    7)
-      echo -e "${CYAN}Вихід з програми.${NC}"
+    6)
+      echo -e "Вихід з програми.\n"
       exit 0
       ;;
     *)
-      echo -e "${RED}Невірний вибір. Спробуйте ще раз.${NC}"
+      echo -e "Невірний вибір. Спробуйте ще раз.\n"
       ;;
   esac
 done
