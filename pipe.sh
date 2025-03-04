@@ -35,7 +35,7 @@ animate_loading() {
         sleep 0.3
         printf "\r${GREEN}Завантажуємо меню${NC}..."
         sleep 0.3
-        printf "\r${GREEN}Завантажуємо меню${NC}"
+        printf "\r${GREEN}Завантажуємо меню${NC}   "
         sleep 0.3
     done
     echo ""
@@ -50,11 +50,12 @@ install_node() {
     echo -e "${BLUE}Починаємо встановлення ноди...${NC}"
 
     # Оновлення та встановлення залежностей
-    install_dependencies
+    # TODO: Додайте функцію install_dependencies, якщо вона потрібна
+    # install_dependencies  
 
     # Створення каталогу для кешу та перехід до нього
     mkdir -p ~/pipe/download_cache
-    cd ~/pipe
+    cd ~/pipe || exit
 
     # Завантаження файлу pop
     wget https://dl.pipecdn.app/v0.2.8/pop
@@ -66,17 +67,17 @@ install_node() {
     screen -S pipe2 -dm
 
     echo -e "${YELLOW}Введіть вашу публічну адресу Solana:${NC}"
-    read SOLANA_PUB_KEY
+    read -r SOLANA_PUB_KEY
     
     # Запит значення для RAM
     echo -e "${YELLOW}Введіть кількість RAM у ГБ (ціле число):${NC}"
-    read RAM
+    read -r RAM
     
     # Запит значення для max-disk
     echo -e "${YELLOW}Введіть кількість max-disk у ГБ (ціле число):${NC}"
-    read DISK
+    read -r DISK
     
-    # Запуск команди з параметрами, з вказанням публічного ключа Solana, RAM і max-disk
+    # Запуск команди у screen
     screen -S pipe2 -X stuff "./pop --ram $RAM --max-disk $DISK --cache-dir ~/pipe/download_cache --pubKey $SOLANA_PUB_KEY\n"
     sleep 3
     screen -S pipe2 -X stuff "e4313e9d866ee3df\n"
@@ -88,31 +89,28 @@ install_node() {
 check_status() {
     echo -e "${BLUE}Перевірка статусу ноди...${NC}"
     
-    cd pipe
+    cd ~/pipe || exit
     ./pop --status
-    cd ..
 }
 
 # Функція для перевірки поінтів ноди
 check_points() {
     echo -e "${BLUE}Перевірка поінтів ноди...${NC}"
 
-    cd pipe
-    
+    cd ~/pipe || exit
     ./pop --points
-    
-    cd ..
 }
 
+# Функція для оновлення ноди
 update_node() {
     echo -e "${BLUE}Оновлення до версії 0.2.8...${NC}"
 
     # Зупинка процесу pop
     echo -e "${YELLOW}Зупиняємо службу pipe-pop...${NC}"
-    ps aux | grep '[p]op' | awk '{print $2}' | xargs kill
+    pkill -f pop
 
     # Перехід до каталогу pipe
-    cd ~/pipe
+    cd ~/pipe || exit
 
     # Видалення старої версії pop
     echo -e "${YELLOW}Видаляємо стару версію pop...${NC}"
@@ -127,13 +125,14 @@ update_node() {
 
     # Перезавантаження системних служб
     sudo systemctl daemon-reload
-    # Завершуємо сесію screen з ім'ям 'pipe2', якщо вона існує
+
+    # Завершуємо сесію screen 'pipe2', якщо вона існує
     if screen -list | grep -q "pipe2"; then
-    screen -S pipe2 -X quit
+        screen -S pipe2 -X quit
     fi
     sleep 2
     
-    # Перезапуск сесії screen з ім'ям 'pipe2' і запуск pop
+    # Перезапуск сесії screen з запуском pop
     screen -S pipe2 -dm ./pop
     
     sleep 5
@@ -146,9 +145,9 @@ update_node() {
 remove_node() {
     echo -e "${BLUE}Видаляємо ноду...${NC}"
 
-     pkill -f pop
+    pkill -f pop
 
-    # Завершуємо сеанс screen з ім'ям 'pipe2' і видаляємо його
+    # Завершуємо сеанс screen з ім'ям 'pipe2'
     screen -S pipe2 -X quit
 
     # Видалення файлів ноди
@@ -169,25 +168,11 @@ CHOICE=$(whiptail --title "Меню дій" \
     3>&1 1>&2 2>&3)
 
 case $CHOICE in
-    1) 
-        install_node
-        ;;
-    2) 
-        check_status
-        ;;
-    3) 
-        check_points
-        ;;
-    4) 
-        remove_node
-        ;;
-    5)
-        update_node
-        ;;
-    6)
-        echo -e "${CYAN}Вихід з програми.${NC}"
-        ;;
-    *)
-        echo -e "${RED}Невірний вибір. Завершення програми.${NC}"
-        ;;
+    1) install_node ;;
+    2) check_status ;;
+    3) check_points ;;
+    4) remove_node ;;
+    5) update_node ;;
+    6) echo -e "${CYAN}Вихід з програми.${NC}" ;;
+    *) echo -e "${RED}Невірний вибір. Завершення програми.${NC}" ;;
 esac
