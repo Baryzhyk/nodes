@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# Функція для завантаження та відображення логотипу
+# Функція для відображення логотипу
 channel_logo() {
-  clear
   bash <(curl -s https://raw.githubusercontent.com/Baryzhyk/nodes/refs/heads/main/logo.sh)
 }
 
@@ -112,8 +111,6 @@ CHOICE=$(whiptail --title "Меню керування нодою" \
   "6" "Вийти з скрипта" \
   3>&1 1>&2 2>&3)
 
-clear
-
 case $CHOICE in
   1)
     install_node
@@ -131,11 +128,16 @@ case $CHOICE in
     remove_node
     ;;
   6)
+    echo -e "\nЗавершення роботи скрипта..."
+    sleep 1
     channel_logo
-    echo -e "Вихід з програми.\n"
     exit 0
     ;;
   *)
     echo -e "Невірний вибір. Спробуйте ще раз.\n"
     ;;
 esac
+
+# Після завершення роботи скрипта виводимо логотип без очищення терміналу
+echo -e "\nСкрипт завершив роботу."
+channel_logo
