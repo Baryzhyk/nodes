@@ -3,6 +3,7 @@
 # Функція для завантаження та відображення логотипу
 channel_logo() {
   bash <(curl -s https://raw.githubusercontent.com/Baryzhyk/nodes/refs/heads/main/logo.sh)
+  echo -e "\n\nПідпишись на найкращий крипто-канал @bogatiy_sybil [💸]\n"
 }
 
 # Функція для встановлення ноди
@@ -113,11 +114,6 @@ CHOICE=$(whiptail --title "Меню керування нодою" \
 
 clear
 
-# Функція для завантаження та відображення логотипу
-channel_logo() {
-  bash <(curl -s https://raw.githubusercontent.com/Baryzhyk/nodes/refs/heads/main/logo.sh)
-}
-
 case $CHOICE in
   1)
     install_node
@@ -135,6 +131,8 @@ case $CHOICE in
     remove_node
     ;;
   6)
+    clear
+    channel_logo
     echo -e "Вихід з програми.\n"
     exit 0
     ;;
@@ -142,3 +140,8 @@ case $CHOICE in
     echo -e "Невірний вибір. Спробуйте ще раз.\n"
     ;;
 esac
+
+# Після завершення скрипта показуємо логотип
+clear
+channel_logo
+
