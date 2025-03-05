@@ -131,7 +131,6 @@ case $CHOICE in
     remove_node
     ;;
   6)
-    clear
     channel_logo
     echo -e "Вихід з програми.\n"
     exit 0
@@ -140,6 +139,3 @@ case $CHOICE in
     echo -e "Невірний вибір. Спробуйте ще раз.\n"
     ;;
 esac
-
-# Після завершення скрипта показуємо логотип
-channel_logo
