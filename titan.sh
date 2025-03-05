@@ -142,5 +142,4 @@ case $CHOICE in
 esac
 
 # Після завершення скрипта показуємо логотип
-clear
 channel_logo
