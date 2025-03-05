@@ -129,8 +129,7 @@ case $CHOICE in
     ;;
   6)
     echo -e "\nЗавершення роботи скрипта..."
-    sleep 1
-    channel_logo
+    echo -e "\nПідписуйтеся на Telegram-канал: @sasha_postyt"
     exit 0
     ;;
   *)
