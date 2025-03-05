@@ -113,6 +113,11 @@ CHOICE=$(whiptail --title "Меню керування нодою" \
 
 clear
 
+# Функція для завантаження та відображення логотипу
+channel_logo() {
+  bash <(curl -s https://raw.githubusercontent.com/Baryzhyk/nodes/refs/heads/main/logo.sh)
+}
+
 case $CHOICE in
   1)
     install_node
