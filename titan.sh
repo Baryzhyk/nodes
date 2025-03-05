@@ -129,7 +129,7 @@ case $CHOICE in
     ;;
   6)
     echo -e "\nЗавершення роботи скрипта..."
-    echo -e "\nПідписуйтеся на Telegram-канал: @sasha_postyt"
+    echo -e "\033[0;35m\nПідписуйтеся на Telegram-канал: @sasha_postyt\033[0m"
     exit 0
     ;;
   *)
@@ -139,4 +139,4 @@ esac
 
 # Після завершення роботи скрипта виводимо логотип без очищення терміналу
 echo -e "\nСкрипт завершив роботу."
-echo -e "\nПідписуйтеся на Telegram-канал: @sasha_postyt"
+echo -e "\033[0;35m\nПідписуйтеся на Telegram-канал: @sasha_postyt\033[0m"
