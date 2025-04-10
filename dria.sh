@@ -52,6 +52,7 @@ download_node() {
 
   source ~/.bashrc
   clear
+  echo 'Встановлення завершено'
   echo 'Введіть команду: screen -S dria'
   echo 'Після цього запустіть вузол'
 }
