@@ -51,7 +51,7 @@ download_node() {
   curl -fsSL https://dria.co/launcher | bash
 
   source ~/.bashrc
-
+  clear
   echo ' Введіть команду screen -S dria'
   echo 'Після цього запустіть вузол'
 }
