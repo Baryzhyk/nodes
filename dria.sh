@@ -52,7 +52,7 @@ download_node() {
 
   source ~/.bashrc
 
-  screen -S drianode
+  screen -S dria
   echo 'Тепер запускайте вузол.'
 }
 
