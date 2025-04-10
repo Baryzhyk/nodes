@@ -3,10 +3,8 @@
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
-channel_logo() {
-  bash <(curl -s https://raw.githubusercontent.com/Baryzhyk/nodes/main/logo.sh)
-  echo -e "\n\nПідпишись на найкращий криптоканал @bogatiy_sybil [💸]"
-}
+# Завантаження логотипу
+bash <(curl -s https://raw.githubusercontent.com/Baryzhyk/nodes/refs/heads/main/logo.sh)
 
 # Анімація
 animate_loading() {
