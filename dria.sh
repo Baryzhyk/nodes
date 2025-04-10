@@ -80,7 +80,6 @@ delete_node() {
 }
 
 # Запуск
-channel_logo
 animate_loading
 
 CHOICE=$(whiptail --title "Меню дій" \
