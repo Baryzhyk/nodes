@@ -74,8 +74,8 @@ models_check() {
 
 delete_node() {
   dkn-compute-launcher uninstall
-  if screen -list | grep -q "drianode"; then
-    screen -ls | grep drianode | cut -d. -f1 | awk '{print $1}' | xargs kill
+  if screen -list | grep -q "dria"; then
+    screen -ls | grep dria | cut -d. -f1 | awk '{print $1}' | xargs kill
   fi
 }
 
