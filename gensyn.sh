@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Перевірка на root
+if [ "$EUID" -ne 0 ]; then
+  echo "Будь ласка, запустіть скрипт з правами root (sudo)"
+  exit 1
+fi
+
 # Завантаження логотипу
 bash <(curl -s https://raw.githubusercontent.com/Baryzhyk/nodes/refs/heads/main/logo.sh)
 
@@ -22,13 +28,14 @@ animate_loading() {
         sleep 0.3
     done
     echo ""
+}
 
 download_node() {
     echo 'Встановлення ноди.'
 
     cd $HOME
 
-    sudo apt install lsof
+    sudo apt install -y lsof
 
     ports=(4040 3000 42763)
 
@@ -43,7 +50,7 @@ download_node() {
 
     if [ -d "$HOME/rl-swarm" ]; then
         PID=$(netstat -tulnp | grep :3000 | awk '{print $7}' | cut -d'/' -f1)
-        sudo kill $PID
+        sudo kill $PID 2>/dev/null
         sudo rm -rf rl-swarm/
     fi
 
@@ -67,13 +74,17 @@ download_node() {
     fi
 
     sudo apt update -y && sudo apt upgrade -y
-    sudo apt install -y git curl wget build-essential python3 python3-venv python3-pip screen yarn net-tools
+    sudo apt install -y git curl wget build-essential python3 python3-venv python3-pip screen yarn net-tools gnupg
 
-    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+    # Додавання репозиторіїв Yarn і Node.js
+    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/yarnkey.gpg >/dev/null
+    echo "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+
     curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+
+    sudo apt update -y
     sudo apt install -y nodejs
-    sudo apt update
+
     curl -sSL https://raw.githubusercontent.com/zunxbt/installation/main/node.sh | bash
 
     git clone https://github.com/zunxbt/rl-swarm.git
@@ -105,9 +116,7 @@ download_node() {
 }
 
 launch_node() {
-    cd $HOME
-
-    cd rl-swarm
+    cd $HOME/rl-swarm
     source .venv/bin/activate
 
     if screen -list | grep -q "gensynnode"; then
@@ -120,7 +129,6 @@ launch_node() {
 go_to_screen() {
     echo 'ВИХІД З ЛОГІВ ЧЕРЕЗ CTRL+A + D'
     sleep 2
-
     screen -r gensynnode
 }
 
@@ -130,12 +138,10 @@ userdata() {
 }
 
 update_node() {
-    cd $HOME
     cd ~/rl-swarm
     git fetch origin
     git reset --hard origin/main
     git pull origin main
-
     echo 'Нода була оновлена.'
 }
 
@@ -143,6 +149,12 @@ delete_node() {
     cd $HOME
 
     if screen -list | grep -q "gensynnode"; then
+        screen -ls | grep gensynnode | cut -d. -f1 | awk '{print $1}' | xargs kill
+    fi
+
+    sudo rm -rf rl-swarm/
+    echo "Нода видалена."
+}
 
 # --- Основне виконання скрипта ---
 animate_loading
