@@ -95,24 +95,14 @@ download_node() {
 
     pip install --upgrade pip
 
-    echo "На вашому сервері встановлено тільки CPU? (якщо не знаєте, натисніть Y) (Y/N)"
-    read answer
-
-    if [ "$answer" = "Y" ] || [ "$answer" = "y" ]; then
-        echo "Налаштовуємо PyTorch для використання тільки CPU..."
         export PYTORCH_ENABLE_MPS_FALLBACK=1
         export PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0
         sed -i 's/torch\.device("mps" if torch\.backends\.mps\.is_available() else "cpu")/torch.device("cpu")/g' hivemind_exp/trainer/hivemind_grpo_trainer.py
-        echo "Команди виконано."
-    else
-        echo "Пропускаємо налаштування, залишаємо як є."
-    fi
-
+      
     if screen -list | grep -q "gensynnode"; then
         screen -ls | grep gensynnode | cut -d. -f1 | awk '{print $1}' | xargs kill
     fi
-
-    echo 'Слідуйте далі гайду.'
+    echo 'Встановлення завершено'
 }
 
 launch_node() {
