@@ -61,7 +61,7 @@ case $CHOICE in
         ;;
     6)
         echo "Ви обрали: Оновити ноду"
-        # Додайте сюди код для оновлення ноди
+        update_node
         ;;
     7)
         echo "Ви обрали: Видалити ноду"
@@ -70,7 +70,8 @@ case $CHOICE in
     *)
         echo "Скасовано."
         ;;
-esac
+   esac
+done
 
 download_node() {
   echo 'Встановлення ноди.'
