@@ -37,7 +37,7 @@ download_node() {
 
     sudo apt install -y lsof
 
-    ports=(4040 3000 42763)
+    ports=(4040 42763)
 
     for port in "${ports[@]}"; do
         if [[ $(lsof -i :"$port" | wc -l) -gt 0 ]]; then
