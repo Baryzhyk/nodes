@@ -25,16 +25,6 @@ animate_loading() {
 download_node() {
   echo 'Починаю встановлення вузла...'
   cd $HOME
-  sudo apt install lsof -y
-
-  ports=(4001)
-  for port in "${ports[@]}"; do
-    if [[ $(lsof -i :"$port" | wc -l) -gt 0 ]]; then
-      echo "Помилка: Порт $port зайнятий. Програма не зможе виконатись."
-      exit 1
-    fi
-  done
-
   sudo apt-get update -y && sudo apt-get upgrade -y
   sudo apt install -y wget make tar screen nano unzip lz4 gcc git jq
 
