@@ -45,14 +45,14 @@ fi
 
 case "$CHOICE" in
   1)
-  # Перевірка та встановлення необхідних утиліт
-for util in figlet whiptail curl docker iptables jq; do
-  if ! command -v "$util" &>/dev/null; then
+    echo -e "${GREEN} Перевірка та встановлення необхідних утиліт...${NC}"
+    for util in figlet whiptail curl docker iptables jq; do
+    if ! command -v "$util" &>/dev/null; then
     echo "$util не знайдено. Встановлюю..."
     sudo apt update && sudo apt install -y "$util"
-  fi
-done
-
+    fi
+    done
+    
     echo -e "${GREEN}Готую середовище...${NC}"
     sudo apt-get update && sudo apt-get upgrade -y
     sudo apt install -y build-essential git jq lz4 make nano automake autoconf tmux htop nvme-cli pkg-config libssl-dev libleveldb-dev clang bsdmainutils ncdu unzip
