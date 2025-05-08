@@ -162,4 +162,4 @@ EOF
 
   6)
     echo -e "${YELLOW}Оновлення вузла Aztec...${NC}"
-    cd "$HOME/aztec-sequencer" || { echo -e "${RED}
+    cd "$HOME/aztec-sequencer" || { echo -e "${RED}❌ Не вдалося перейти в директорію aztec-sequencer${NC}"; exit 1; }
