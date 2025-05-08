@@ -161,5 +161,53 @@ EOF
     ;;
 
   6)
-    echo -e "${YELLOW}Оновлення вузла Aztec...${NC}"
-    cd "$HOME/aztec-sequencer" || { echo -e "${RED}❌ Не вдалося перейти в директорію aztec-sequencer${NC}"; exit 1; }
+    echo -e "${YELLOW}Оновлення ноди Aztec...${NC}"
+    cd "$HOME/aztec-sequencer" || { echo -e "${RED}Папку з нодою не знайдено.${NC}"; exit 1; }
+
+    echo -e "${GREEN}Отримуємо актуальний тег...${NC}"
+    NEW_TAG=$(curl -s "https://registry.hub.docker.com/v2/repositories/aztecprotocol/aztec/tags?page_size=100" \
+      | jq -r '.results[].name' \
+      | grep -E '^0\..*-alpha-testnet\.[0-9]+$' \
+      | grep -v 'arm64' \
+      | sort -V | tail -1)
+
+    if [ -z "$NEW_TAG" ]; then
+      echo -e "${RED}❌ Не вдалося визначити тег. Використовуємо alpha-testnet.${NC}"
+      NEW_TAG="alpha-testnet"
+    fi
+
+    echo -e "${CYAN}Оновлюємо образ до: $NEW_TAG${NC}"
+    docker pull aztecprotocol/aztec:"$NEW_TAG"
+
+    echo -e "${YELLOW}Зупиняємо поточний контейнер...${NC}"
+    docker stop aztec-sequencer && docker rm aztec-sequencer
+
+    echo -e "${YELLOW}Очищаємо старі дані...${NC}"
+    rm -rf "$HOME/aztec-sequencer/data"/*
+    mkdir -p "$HOME/aztec-sequencer/data"
+
+    echo -e "${GREEN}Запускаємо оновлену ноду...${NC}"
+    docker run --platform linux/amd64 -d \
+      --name aztec-sequencer \
+      --network host \
+      --env-file "$HOME/aztec-sequencer/.env" \
+      -e DATA_DIRECTORY=/data \
+      -e LOG_LEVEL=debug \
+      -v "$HOME/aztec-sequencer/data":/data \
+      aztecprotocol/aztec:"$NEW_TAG" \
+      sh -c 'node --no-warnings /usr/src/yarn-project/aztec/dest/bin/index.js start --network alpha-testnet --node --archiver --sequencer'
+
+    if [ $? -ne 0 ]; then
+      echo -e "${RED}❌ Оновлення завершилося з помилкою. Перевірте логи.${NC}"
+    else
+      echo -e "${GREEN}✅ Оновлення пройшло успішно.${NC}"
+      docker logs --tail 100 -f aztec-sequencer
+    fi
+    give_ack
+    ;;
+
+  *)
+    echo -e "${RED}Неправильний вибір. Вихід.${NC}"
+    exit 1
+    ;;
+esac
