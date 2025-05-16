@@ -9,6 +9,12 @@ PINK="\e[35m"
 RED="\e[31m"
 NC="\e[0m"
 
+# --- ФУНКЦІЇ ---
+give_ack() {
+  echo ""
+  read -p "Натисніть Enter для повернення до меню..."
+}
+
 # Функція анімації
 animate_loading() {
     for ((i = 1; i <= 5; i++)); do
@@ -25,6 +31,7 @@ animate_loading() {
 }
 
 animate_loading
+
 
 # Меню вибору
 CHOICE=$(whiptail --title "Управління вузлом Aztec" \
