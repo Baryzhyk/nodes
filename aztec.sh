@@ -109,9 +109,9 @@ EOF
 
     echo -e "${PURPLE}-----------------------------------------------------------------------${NC}"
     echo -e "${YELLOW}Команда для перегляду логів:${NC}" 
-    echo "docker logs --tail 100 -f aztec-sequencer"
+    echo "docker logs -f aztec-sequencer -n50"
     echo -e "${PURPLE}-----------------------------------------------------------------------${NC}"
-    echo -e "${GREEN}Процес завершено.${NC}"
+    echo -e "${GREEN}Встановлення завершено.${NC}"
     sleep 2
     docker logs --tail 100 -f aztec-sequencer
     ;;
