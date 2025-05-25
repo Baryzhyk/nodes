@@ -107,11 +107,11 @@ EOF
       aztecprotocol/aztec:0.87.2 \
       -c 'node --no-warnings /usr/src/yarn-project/aztec/dest/bin/index.js start --network alpha-testnet --node --archiver --sequencer'
 
-    echo -e "${PURPLE}-----------------------------------------------------------------------${NC}"
     echo -e "${YELLOW}Команда для перегляду логів:${NC}" 
     echo "docker logs -f aztec-sequencer -n50"
-    echo -e "${PURPLE}-----------------------------------------------------------------------${NC}"
+
     echo -e "${GREEN}Встановлення завершено.${NC}"
+    echo -e "${GREEN}Для виходу натисніть Ctrl + C.${NC}"
     sleep 2
     docker logs --tail 100 -f aztec-sequencer
     ;;
