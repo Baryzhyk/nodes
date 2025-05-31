@@ -87,7 +87,7 @@ download_node() {
 
     curl -sSL https://raw.githubusercontent.com/zunxbt/installation/main/node.sh | bash
 
-    git clone https://github.com/zunxbt/rl-swarm.git
+    git clone https://github.com/gensyn-ai/rl-swarm.git
     cd rl-swarm
 
     python3 -m venv .venv
