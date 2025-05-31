@@ -92,6 +92,8 @@ download_node() {
 
     python3 -m venv .venv
     source .venv/bin/activate
+    
+    pip install -r requirements-cpu.txt
 
     pip install --upgrade pip
 
