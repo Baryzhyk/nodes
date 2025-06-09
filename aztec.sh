@@ -76,7 +76,7 @@ case $CHOICE in
     mkdir -p "$HOME/aztec-sequencer"
     cd "$HOME/aztec-sequencer"
 
-    docker pull aztecprotocol/aztec:0.87.2
+    docker pull aztecprotocol/aztec:latest
 
     read -p "Вставте ваш URL RPC Sepolia: " RPC
     read -p "Вставте ваш URL Beacon Sepolia: " CONSENSUS
@@ -104,7 +104,7 @@ EOF
       -e DATA_DIRECTORY=/data \
       -e LOG_LEVEL=debug \
       -v "$HOME/aztec-sequencer/data":/data \
-      aztecprotocol/aztec:0.87.2 \
+      aztecprotocol/aztec:latest \
       -c 'node --no-warnings /usr/src/yarn-project/aztec/dest/bin/index.js start --network alpha-testnet --node --archiver --sequencer'
 
     echo -e "${YELLOW}Команда для перегляду логів:${NC}" 
