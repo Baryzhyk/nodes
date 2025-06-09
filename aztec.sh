@@ -178,7 +178,7 @@ fi
 
   5)
     echo -e "${BLUE}Оновлення ноди Aztec...${NC}"
-    docker pull aztecprotocol/aztec:0.87.2
+    docker pull aztecprotocol/aztec:latest
     docker stop aztec-sequencer
     docker rm aztec-sequencer
     rm -rf "$HOME/aztec-sequencer/data/*"
@@ -191,7 +191,7 @@ fi
       -e DATA_DIRECTORY=/data \
       -e LOG_LEVEL=debug \
       -v "$HOME/aztec-sequencer/data":/data \
-      aztecprotocol/aztec:0.87.2 \
+      aztecprotocol/aztec:latest \
       -c 'node --no-warnings /usr/src/yarn-project/aztec/dest/bin/index.js start --network alpha-testnet --node --archiver --sequencer'
     echo -e "${GREEN}Оновлення завершено.${NC}"
     docker logs --tail 100 -f aztec-sequencer
