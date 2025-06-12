@@ -6,16 +6,6 @@ RED="\e[31m"
 PINK="\e[35m"
 NC="\e[0m"
 
-# Встановлення необхідних пакетів
-echo -e "${GREEN}Перевірка та встановлення залежностей...${NC}"
-sudo apt update -y &>/dev/null
-for pkg in curl screen whiptail; do
-  if ! dpkg -s "$pkg" &>/dev/null; then
-    echo -e "${PINK}Встановлюємо $pkg...${NC}"
-    sudo apt install "$pkg" -y &>/dev/null
-  fi
-done
-
 # Логотип
 bash <(curl -s https://raw.githubusercontent.com/Baryzhyk/nodes/refs/heads/main/logo.sh)
 
@@ -52,6 +42,17 @@ fi
 
 case $CHOICE in
   1)
+
+    # Встановлення необхідних пакетів
+echo -e "${GREEN}Перевірка та встановлення залежностей...${NC}"
+sudo apt update -y &>/dev/null
+for pkg in curl screen whiptail; do
+  if ! dpkg -s "$pkg" &>/dev/null; then
+    echo -e "${PINK}Встановлюємо $pkg...${NC}"
+    sudo apt install "$pkg" -y &>/dev/null
+  fi
+done
+
     read -p "Вставте ваш адрес гаманця (0x...): " WALLET 
     curl -L https://github.com/cysic-labs/cysic-phase3/releases/download/v1.0.0/setup_linux.sh -o ~/setup_linux.sh
     bash ~/setup_linux.sh "$WALLET"
