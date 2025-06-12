@@ -13,7 +13,7 @@ echo -e "${GOLD}╚════██║██╔══██║╚════�
 echo -e "${GOLD}███████║██║  ██║███████║██║  ██║██║  ██║    ${WHITE}██║     ╚██████╔╝███████║   ██║   ╚██████╔╝   ██║   "
 echo -e "${GOLD}╚══════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝    ${WHITE}╚═╝      ╚═════╝ ╚══════╝   ╚═╝    ╚═════╝    ╚═╝   "
 
-echo -e "${GREEN}       WELCOME TO ${GOLD}SASHA POSTYT ${WHITE}TOOLS!"
+echo -e "${GREEN}       WELCOME TO ${GOLD}SASHA POSTYT TOOLS!"
 echo -e "${BLUE}-------------------------------------------------${RESET}"
 echo -e "${GREEN}Підписуйтеся на Telegram-канал: ${GOLD}@sasha_postyt${RESET}"
 
