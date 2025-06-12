@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # Колірні коди
-WHITE="\033[1;37m"
+GREEN="\e[32m"
+GOLD="\e[33m"
+WHITE="\e[0m"
 GOLD="\033[1;33m"
 RESET="\033[0m"
 
@@ -12,7 +14,7 @@ echo -e "${GOLD}╚════██║██╔══██║╚════�
 echo -e "${GOLD}███████║██║  ██║███████║██║  ██║██║  ██║    ${WHITE}██║     ╚██████╔╝███████║   ██║   ╚██████╔╝   ██║   "
 echo -e "${GOLD}╚══════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝    ${WHITE}╚═╝      ╚═════╝ ╚══════╝   ╚═╝    ╚═════╝    ╚═╝   "
 
-echo -e "${WHITE}       WELCOME TO ${GOLD}SASHA POSTYT ${WHITE}TOOLS!${RESET}"
+echo -e "${GREEN}       WELCOME TO ${GOLD}SASHA POSTYT ${WHITE}TOOLS!${RESET}"
 echo -e "${BLUE}-------------------------------------------------${RESET}"
-echo -e "${WHITE}Підписуйтеся на Telegram-канал: ${GOLD}@sasha_postyt${RESET}"
+echo -e "${GREEN}Підписуйтеся на Telegram-канал: ${GOLD}@sasha_postyt${RESET}"
 
