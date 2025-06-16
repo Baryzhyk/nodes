@@ -114,7 +114,6 @@ EOF
     sudo systemctl start zgs
 
     echo -e "${GREEN}✅ Встановлення завершено.${NC}"
-    echo -e "${PINK}Для виходу з screen натисніть Ctrl+A, потім D${NC}"
     ;;
 
   2)
