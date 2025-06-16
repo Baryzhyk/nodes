@@ -37,9 +37,10 @@ CHOICE=$(whiptail --title "Меню керування Cysic" \
   --menu "Оберіть потрібну дію:" 20 70 10 \
     "1" "Встановити ноду" \
     "2" "Перевірити статус ноди" \
-    "3" "Перевірити логи" \
-    "4" "Перезапустити ноду" \
-    "5" "Видалити ноду" \
+    "3" "Перевірити піри" \
+    "4" "Перевірити логи" \
+    "5" "Перезапустити ноду" \
+    "6" "Видалити ноду" \
   3>&1 1>&2 2>&3)
 
 if [ $? -ne 0 ]; then
@@ -119,10 +120,11 @@ EOF
   2)
     echo -e "${GREEN}Перевірка статусу...${NC}"
     sudo systemctl status zgs
+    echo -e "${GREEN}Для виходу натисніть Ctrl + C.${NC}"
     ;;
 
   3)
-    echo -e "${GREEN}Перевірка логів...${NC}"
+    echo -e "${GREEN}Перевірка пірів...${NC}"
     while true; do
         response=$(curl -s -X POST http://localhost:5678 -H "Content-Type: application/json" -d '{"jsonrpc":"2.0","method":"zgs_getStatus","params":[],"id":1}')
         logSyncHeight=$(echo $response | jq '.result.logSyncHeight')
@@ -133,11 +135,22 @@ EOF
     ;;
 
   4)
+    echo -e "${GREEN}Вивід поточних логів...${NC}"
+    LOG_FILE="$HOME/0g-storage-node/run/log/zgs.log.$(TZ=UTC date +%Y-%m-%d)"
+    if [ -f "$LOG_FILE" ]; then
+        tail -f "$LOG_FILE"
+    else
+        echo -e "${RED}Лог-файл не знайдено: $LOG_FILE${NC}"
+    fi
+    ;;
+
+  5)
     echo -e "${GREEN}Перезапуск вузла...${NC}"
     sudo systemctl restart zgs
     ;;
 
-  5)
+
+  6)
     echo -e "${RED}Видаляємо вузол...${NC}"
     sudo systemctl stop zgs
     sudo systemctl disable zgs
