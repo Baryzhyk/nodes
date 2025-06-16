@@ -78,7 +78,7 @@ case $CHOICE in
 
     echo -e "${GREEN}Завантажуємо конфігурацію...${NC}"
     rm -f $HOME/0g-storage-node/run/config.toml
-    curl -o $HOME/0g-storage-node/run/config.toml https://raw.githubusercontent.com/ruspacer/0g/refs/heads/main/config.toml
+    curl -o $HOME/0g-storage-node/run/config.toml https://raw.githubusercontent.com/Baryzhyk/nodes/refs/heads/main/config.toml
 
     read -p "Вставте приватний ключ вашого гаманця (0x…): " PRIVATE_KEY
 
