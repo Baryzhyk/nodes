@@ -88,7 +88,8 @@ case $CHOICE in
     fi
 
     echo -e "${GREEN}Додаємо приватний ключ у конфігурацію...${NC}"
-    echo "miner_key = \"$PRIVATE_KEY\"" > $HOME/0g-storage-node/run/config.toml
+    sed -i "s|^miner_key = \".*\"|miner_key = \"$PRIVATE_KEY\"|" $HOME/0g-storage-node/run/config.toml
+
 
     echo -e "${GREEN}Створюємо systemd сервіс...${NC}"
     sudo tee /etc/systemd/system/zgs.service > /dev/null <<EOF
