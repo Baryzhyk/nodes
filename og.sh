@@ -33,7 +33,7 @@ if ! command -v whiptail &> /dev/null; then
 fi
 
 # Меню
-CHOICE=$(whiptail --title "Меню керування Cysic" \
+CHOICE=$(whiptail --title "Меню керування 0g" \
   --menu "Оберіть потрібну дію:" 20 70 10 \
     "1" "Встановити ноду" \
     "2" "Перевірити статус ноди" \
