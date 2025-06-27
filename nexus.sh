@@ -151,8 +151,11 @@ fi
 case $CHOICE in
   1) install_node ;;
   2)
-    screen -r nexus || echo -e "${RED}❌ Сесія не знайдена. Можливо вузол не запущено.${NC}"
-    ;;
+    if screen -list | grep -q "nexus"; then
+  screen -r nexus
+else
+  echo -e "${RED}❌ Сесія не знайдена. Можливо вузол не запущено.${NC}"
+fi    ;;
   3) restart_node ;;
   4) delete_node ;;
   5) update_node ;;
