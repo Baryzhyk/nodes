@@ -98,7 +98,7 @@ install_node() {
 # --- Функція: Перезапуск вузла ---
 restart_node() {
     echo -e "${RED}♻ Перезапуск вузла...${NC}"
-    screen -XS nexus quit 2>/dev/null
+    screen -XS nexus quit >/dev/null 2>&1 || :
     docker stop nexus 2>/dev/null || true
     docker rm nexus 2>/dev/null || true
 
@@ -121,7 +121,7 @@ delete_node() {
 # --- Функція: Оновлення вузла ---
 update_node() {
     echo -e "${PINK}🔄 Оновлення вузла...${NC}"
-    screen -XS nexus quit 2>/dev/null || true
+    screen -XS nexus quit >/dev/null 2>&1 || :
 l   docker stop nexus 2>/dev/null || true
     docker rm nexus 2>/dev/null || true
     docker pull nexusxyz/nexus-cli:latest
