@@ -118,6 +118,20 @@ delete_node() {
     echo -e "${GREEN}✅ Вузол повністю видалено.${NC}"
 }
 
+# --- Функція: Оновлення вузла ---
+update_node() {
+    echo -e "${PINK}🔄 Оновлення вузла...${NC}"
+    screen -XS nexus quit 2>/dev/null
+    docker stop nexus 2>/dev/null || true
+    docker rm nexus 2>/dev/null || true
+    docker pull nexusxyz/nexus-cli:latest
+
+    read -p "Вставте ваш node id: " PRIVATE_KEY
+
+    screen -S nexus -dm bash -c "docker run -it --init --name nexus nexusxyz/nexus-cli:latest start --node-id $PRIVATE_KEY"
+    echo -e "${GREEN}✅ Вузол оновлено.${NC}"
+}
+
 # --- Головне меню ---
 CHOICE=$(whiptail --title "Меню керування Nexus" \
   --menu "Оберіть дію:" 20 60 10 \
@@ -125,6 +139,7 @@ CHOICE=$(whiptail --title "Меню керування Nexus" \
   "2" "Переглянути логи" \
   "3" "Перезапустити ноду" \
   "4" "Видалити ноду" \
+  "5" "Оновити ноду" \
   3>&1 1>&2 2>&3)
 
 # --- Обробка вибору ---
@@ -140,5 +155,6 @@ case $CHOICE in
     ;;
   3) restart_node ;;
   4) delete_node ;;
+  5) update_node ;;
   *) echo -e "${RED}Невідома опція.${NC}" ;;
 esac
