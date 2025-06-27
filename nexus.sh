@@ -121,8 +121,8 @@ delete_node() {
 # --- Функція: Оновлення вузла ---
 update_node() {
     echo -e "${PINK}🔄 Оновлення вузла...${NC}"
-    screen -XS nexus quit 2>/dev/null
-    docker stop nexus 2>/dev/null || true
+    screen -XS nexus quit 2>/dev/null || true
+l   docker stop nexus 2>/dev/null || true
     docker rm nexus 2>/dev/null || true
     docker pull nexusxyz/nexus-cli:latest
 
