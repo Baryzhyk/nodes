@@ -122,7 +122,7 @@ delete_node() {
 update_node() {
     echo -e "${PINK}🔄 Оновлення вузла...${NC}"
     screen -XS nexus quit >/dev/null 2>&1 || :
-l   docker stop nexus 2>/dev/null || true
+    docker stop nexus 2>/dev/null || true
     docker rm nexus 2>/dev/null || true
     docker pull nexusxyz/nexus-cli:latest
 
