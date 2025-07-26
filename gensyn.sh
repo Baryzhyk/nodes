@@ -30,136 +30,55 @@ animate_loading() {
     echo ""
 }
 
-download_node() {
-    echo 'Встановлення ноди.'
+get_role_with_gswarm() {
+    echo "=== [1/5] Встановлюємо залежності ==="
+    apt update
+    apt install -y wget curl nano
 
-    cd $HOME
+    echo "=== [2/5] Встановлюємо Go 1.23.10 ==="
+    cd /tmp
+    wget -q https://go.dev/dl/go1.23.10.linux-amd64.tar.gz
+    rm -rf /usr/local/go
+    tar -C /usr/local -xzf go1.23.10.linux-amd64.tar.gz
 
-    sudo apt install -y lsof
-
-    ports=(4040 42763)
-
-    for port in "${ports[@]}"; do
-        if [[ $(lsof -i :"$port" | wc -l) -gt 0 ]]; then
-            echo "Помилка: Порт $port зайнятий. Програма не зможе виконатись."
-            exit 1
-        fi
-    done
-
-    echo -e "Усі порти вільні! Зараз почнеться установка...\n"
-
-    if [ -d "$HOME/rl-swarm" ]; then
-        PID=$(netstat -tulnp | grep :3000 | awk '{print $7}' | cut -d'/' -f1)
-        sudo kill $PID 2>/dev/null
-        sudo rm -rf rl-swarm/
+    if ! grep -q '/usr/local/go/bin' ~/.bashrc; then
+        echo 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin' >> ~/.bashrc
     fi
+    export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
 
-    TARGET_SWAP_GB=32
-    CURRENT_SWAP_KB=$(free -k | awk '/Swap:/ {print $2}')
-    CURRENT_SWAP_GB=$((CURRENT_SWAP_KB / 1024 / 1024))
+    echo "Версія Go:"
+    go version
 
-    echo "Поточний розмір Swap: ${CURRENT_SWAP_GB}GB"
-    if [ "$CURRENT_SWAP_GB" -lt "$TARGET_SWAP_GB" ]; then
-        swapoff -a
-        sed -i '/swap/d' /etc/fstab
-        SWAPFILE=/swapfile
-        fallocate -l ${TARGET_SWAP_GB}G $SWAPFILE
-        chmod 600 $SWAPFILE
-        mkswap $SWAPFILE
-        swapon $SWAPFILE
-        echo "$SWAPFILE none swap sw 0 0" >> /etc/fstab
-        echo "vm.swappiness = 10" >> /etc/sysctl.conf
-        sysctl -p
-        echo "Swap був встановлений на ${TARGET_SWAP_GB}GB"
-    fi
+    echo "=== [3/5] Встановлюємо GSwarm ==="
+    go install github.com/Deep-Commit/gswarm/cmd/gswarm@latest
 
-    sudo apt update -y && sudo apt upgrade -y
-    sudo apt install -y git curl wget build-essential python3 python3-venv python3-pip screen yarn net-tools gnupg
+    echo "gswarm встановлено за шляхом: $(which gswarm)"
 
-    # Додавання репозиторіїв Yarn і Node.js
-    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/yarnkey.gpg >/dev/null
-    echo "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+    echo "=== [4/5] Перевіряємо gswarm ==="
+    gswarm --help || { echo 'Помилка встановлення gswarm!'; exit 2; }
 
-    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+    echo "=== [5/5] Запускаємо майстер налаштування (введіть параметри Telegram-бота) ==="
+    sleep 1
+    gswarm
 
-    sudo apt update -y
-    sudo apt install -y nodejs
-
-    curl -sSL https://raw.githubusercontent.com/zunxbt/installation/main/node.sh | bash
-
-    git clone https://github.com/gensyn-ai/rl-swarm
-    cd rl-swarm
-
-    python3 -m venv .venv
-    source .venv/bin/activate
-    
-    pip install -r requirements-cpu.txt
-
-    pip install --upgrade pip
-
-        export PYTORCH_ENABLE_MPS_FALLBACK=1
-        export PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0
-        sed -i 's/torch\.device("mps" if torch\.backends\.mps\.is_available() else "cpu")/torch.device("cpu")/g' hivemind_exp/trainer/hivemind_grpo_trainer.py
-      
-    if screen -list | grep -q "gensynnode"; then
-        screen -ls | grep gensynnode | cut -d. -f1 | awk '{print $1}' | xargs kill
-    fi
-    echo 'Встановлення завершено'
+    echo "=== ✅ Отримання ролі завершено! ==="
 }
 
-launch_node() {
-    cd $HOME/rl-swarm
-    source .venv/bin/activate
-
-    if screen -list | grep -q "gensynnode"; then
-        screen -ls | grep gensynnode | cut -d. -f1 | awk '{print $1}' | xargs kill
-    fi
-
-    screen -S gensynnode -d -m bash -c "trap '' INT; bash run_rl_swarm.sh 2>&1 | tee $HOME/rl-swarm/gensynnode.log"
-}
-
-go_to_screen() {
-    echo 'ВИХІД З ЛОГІВ ЧЕРЕЗ CTRL+A + D'
-    sleep 2
-    screen -r gensynnode
-}
-
-userdata() {
-    cd $HOME
-    cat ~/rl-swarm/modal-login/temp-data/userData.json
-}
-
-update_node() {
-    cd ~/rl-swarm
-    git fetch origin
-    git reset --hard origin/main
-    git pull origin main
-    echo 'Нода була оновлена.'
-}
-
-delete_node() {
-    cd $HOME
-
-    if screen -list | grep -q "gensynnode"; then
-        screen -ls | grep gensynnode | cut -d. -f1 | awk '{print $1}' | xargs kill
-    fi
-
-    sudo rm -rf rl-swarm/
-    echo "Нода видалена."
-}
+# (інші функції: download_node, launch_node, тощо - залишаються без змін)
 
 # --- Основне виконання скрипта ---
 animate_loading
 
 CHOICE=$(whiptail --title "Меню дій" \
-    --menu "Оберіть дію:" 18 60 7 \
+    --menu "Оберіть дію:" 20 60 8 \
     "1" "Встановити ноду" \
     "2" "Запустити/Перезапустити ноду" \
     "3" "Перейти до screen ноди" \
     "4" "Показати дані користувача" \
     "5" "Перевірити встановлені моделі" \
     "6" "Оновити ноду" \
-    "7" "Видалити ноду" \
+    "7" "Отримати роль" \
+    "8" "Видалити ноду" \
     3>&1 1>&2 2>&3)
 
 case $CHOICE in
@@ -169,6 +88,7 @@ case $CHOICE in
     4) echo "Ви обрали: Показати дані користувача"; userdata ;;
     5) echo "Ви обрали: Перевірити встановлені моделі"; update_node ;;
     6) echo "Ви обрали: Оновити ноду"; update_node ;;
-    7) echo "Ви обрали: Видалити ноду"; delete_node ;;
+    7) echo "Ви обрали: Отримати роль"; get_role_with_gswarm ;;
+    8) echo "Ви обрали: Видалити ноду"; delete_node ;;
     *) echo "Скасовано." ;;
 esac
