@@ -159,11 +159,16 @@ check_models() {
   ls ~/rl-swarm/models 2>/dev/null || echo "Моделі не знайдено."
 }
 
+enable_autorestart() {
+  echo "⚙️ Увімкнення ауторестарту..."
+  wget --no-cache -q -O restart.sh https://raw.githubusercontent.com/Baryzhyk/nodes/refs/heads/main/restart.sh && chmod +x restart.sh && ./restart.sh
+}
+
 # --- Меню ---
 animate_loading
 
 CHOICE=$(whiptail --title "Меню дій" \
-  --menu "Оберіть дію:" 20 60 10 \
+  --menu "Оберіть дію:" 20 60 12 \
   "1" "Встановити ноду" \
   "2" "Запустити/Перезапустити ноду" \
   "3" "Перейти до screen ноди" \
@@ -172,6 +177,7 @@ CHOICE=$(whiptail --title "Меню дій" \
   "6" "Оновити ноду" \
   "7" "Отримати роль" \
   "8" "Видалити ноду" \
+  "9" "Увімкнути autorestart" \
   3>&1 1>&2 2>&3)
 
 case $CHOICE in
@@ -183,5 +189,6 @@ case $CHOICE in
   6) echo "Ви обрали: Оновити ноду"; update_node ;;
   7) echo "Ви обрали: Отримати роль"; get_role_with_gswarm ;;
   8) echo "Ви обрали: Видалити ноду"; delete_node ;;
+  9) echo "Ви обрали: Увімкнути autorestart"; enable_autorestart ;;
   *) echo "❌ Скасовано." ;;
 esac
