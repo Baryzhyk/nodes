@@ -106,7 +106,12 @@ download_node() {
   echo "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
   curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
   apt update -y && apt install -y nodejs
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+  source ~/.bashrc
+  nvm install 20.18.0
+  nvm use 20.18.0
 
+  
   git clone https://github.com/gensyn-ai/rl-swarm
   cd rl-swarm
   python3 -m venv .venv
