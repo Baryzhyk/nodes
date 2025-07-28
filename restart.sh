@@ -66,7 +66,7 @@ restart_process() {
     mkdir -p "$(dirname "$LOG_FILE")"
     touch "$LOG_FILE"
 
-    TEMP_SOURCE="/root/temp"
+    TEMP_SOURCE="/root/rl-swarm/modal-login/temp-data/logs"
     TEMP_DEST="/root/rl-swarm/modal-login/temp-data"
 
     echo "[INFO] Підготовка тимчасових файлів..."
@@ -78,12 +78,14 @@ restart_process() {
 
     if [ -f "$TEMP_SOURCE/userData.json" ]; then
         cp "$TEMP_SOURCE/userData.json" "$TEMP_DEST/"
+        echo "[INFO] Скопійовано userData.json"
     else
         echo "[WARN] $TEMP_SOURCE/userData.json не знайдено!"
     fi
 
     if [ -f "$TEMP_SOURCE/userApiKey.json" ]; then
         cp "$TEMP_SOURCE/userApiKey.json" "$TEMP_DEST/"
+        echo "[INFO] Скопійовано userApiKey.json"
     else
         echo "[WARN] $TEMP_SOURCE/userApiKey.json не знайдено!"
     fi
