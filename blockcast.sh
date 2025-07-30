@@ -50,9 +50,25 @@ install_node() {
   echo -e "${PINK}Запуск docker-compose...${NC}"
   docker-compose up -d
 
-  echo -e "${PINK}Ініціалізація ноди...${NC}"
-  docker-compose exec blockcastd blockcastd init
-
+  # Чекаємо, поки контейнер стане активним
+   echo -e "${PINK}Очікування запуску blockcastd...${NC}"
+for i in {1..10}; do
+  STATUS=$(docker inspect -f '{{.State.Running}}' blockcastd 2>/dev/null)
+  if [ "$STATUS" == "true" ]; then
+    echo -e "${GREEN}✅ Контейнер blockcastd працює.${NC}"
+    break
+  else
+    echo -e "${PINK}Спроба $i: контейнер ще неактивний. Очікування...${NC}"
+    sleep 3
+  fi
+done
+# Перевірка остаточна
+if [ "$STATUS" != "true" ]; then
+  echo -e "${RED}❌ Контейнер blockcastd не запустився. Перевірте логи: docker logs blockcastd${NC}"
+  return
+fi
+# Ініціалізація
+docker-compose exec blockcastd blockcastd init
   echo -e "${PINK}Локація вузла:${NC}"
   curl -s https://ipinfo.io | jq '.city, .region, .country, .loc'
 
