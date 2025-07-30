@@ -63,41 +63,27 @@ restart_process() {
 
     screen -XS gensynnode quit
     
-    mkdir -p "$(dirname "$LOG_FILE")"
-    touch "$LOG_FILE"
+   mkdir -p "$(dirname "$LOG_FILE")"
+touch "$LOG_FILE"
 
-    TEMP_SOURCE="/root/rl-swarm/modal-login/temp-data/"
-    TEMP_DEST="/root/rl-swarm/modal-login/temp-data"
+echo "[INFO] Перевірка наявності важливих файлів..."
 
-    echo "[INFO] Підготовка тимчасових файлів..."
-    if [ -d "$TEMP_DEST" ]; then
-        rm -f "$TEMP_DEST"/*
-    else
-        mkdir -p "$TEMP_DEST"
-    fi
+if [ ! -f "/root/rl-swarm/modal-login/temp-data/userData.json" ]; then
+    echo "[WARN] /root/rl-swarm/modal-login/temp-data/userData.json не знайдено!"
+fi
 
-    if [ -f "$TEMP_SOURCE/userData.json" ]; then
-        cp "$TEMP_SOURCE/userData.json" "$TEMP_DEST/"
-        echo "[INFO] Скопійовано userData.json"
-    else
-        echo "[WARN] $TEMP_SOURCE/userData.json не знайдено!"
-    fi
+if [ ! -f "/root/rl-swarm/modal-login/temp-data/userApiKey.json" ]; then
+    echo "[WARN] /root/rl-swarm/modal-login/temp-data/userApiKey.json не знайдено!"
+fi
 
-    if [ -f "$TEMP_SOURCE/userApiKey.json" ]; then
-        cp "$TEMP_SOURCE/userApiKey.json" "$TEMP_DEST/"
-        echo "[INFO] Скопійовано userApiKey.json"
-    else
-        echo "[WARN] $TEMP_SOURCE/userApiKey.json не знайдено!"
-    fi
+cd "$PROJECT_DIR" || exit
+source .venv/bin/activate
 
-    cd "$PROJECT_DIR" || exit
-    source .venv/bin/activate
+echo "[INFO] Запускаємо процес у сесії screen..."
+screen -S gensynnode -d -m bash -c "trap '' INT; bash run_rl_swarm.sh 2>&1 | tee /root/rl-swarm/gensynnode.log"
 
-    echo "[INFO] Запускаємо процес у сесії screen..."
-    screen -S gensynnode -d -m bash -c "trap '' INT; bash run_rl_swarm.sh 2>&1 | tee /root/rl-swarm/gensynnode.log"
-
-    echo "[INFO] Процес запущено, лог: $LOG_FILE"
-    sleep 5
+echo "[INFO] Процес запущено, лог: $LOG_FILE"
+sleep 5
 
     echo "[INFO] Очікуємо завершення встановлення..."
 
