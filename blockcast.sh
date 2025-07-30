@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Перевірка на root
+# Перевірка root
 if [ "$EUID" -ne 0 ]; then
   echo "Будь ласка, запустіть скрипт з правами root (sudo)"
   exit 1
@@ -15,97 +15,96 @@ PINK="\e[35m"
 RED="\e[31m"
 NC="\e[0m"
 
-# Функція для анімації завантаження
-animate_loading() {
-  for ((i = 1; i <= 5; i++)); do
-    printf "\r${GREEN}Завантажуємо меню${NC}."
-    sleep 0.3
-    printf "\r${GREEN}Завантажуємо меню${NC}.."
-    sleep 0.3
-    printf "\r${GREEN}Завантажуємо меню${NC}..."
-    sleep 0.3
-    printf "\r${GREEN}Завантажуємо меню${NC}    "
-    sleep 0.3
-  done
+# Функція очікування
+give_ack() {
   echo ""
+  read -p "Натисніть Enter для повернення до меню..."
 }
 
-# Функція для встановлення ноди
+# Анімація
+animate_loading() {
+    for ((i = 1; i <= 5; i++)); do
+        printf "\r${GREEN}Завантажуємо меню${NC}."
+        sleep 0.3
+        printf "\r${GREEN}Завантажуємо меню${NC}.."
+        sleep 0.3
+        printf "\r${GREEN}Завантажуємо меню${NC}..."
+        sleep 0.3
+        printf "\r${GREEN}Завантажуємо меню${NC}    "
+        sleep 0.3
+    done
+    echo ""
+}
+
+# --- Функції дій ---
+
 install_node() {
   echo -e "${PINK}Оновлення системи...${NC}"
   apt update && apt upgrade -y
-  apt install -y curl
+  apt install -y curl git jq docker docker-compose
 
-  # Перевірка Docker
-  if ! command -v docker &> /dev/null; then
-    echo -e "${RED}Docker не знайдено. Встановлюємо...${NC}"
-    # Синхронізація для встановлення Docker (замініть це на ваші власні команди)
-    synchronize install-docker
-    synchronize fix-docker
-  else
-    echo -e "${GREEN}Docker вже встановлено: $(docker --version)${NC}"
-  fi
-
-  # Клонуємо репозиторій для ноди
+  echo -e "${PINK}Клонування репозиторію...${NC}"
   git clone https://github.com/Blockcast/beacon-docker-compose.git
-  cd beacon-docker-compose
-  # Запускаємо Docker Compose
+  cd beacon-docker-compose || exit 1
+
+  echo -e "${PINK}Запуск docker-compose...${NC}"
   docker-compose up -d
 
-  # Очікуємо, поки образ встановиться
+  echo -e "${PINK}Ініціалізація ноди...${NC}"
   docker-compose exec blockcastd blockcastd init
 
-  # Виводимо інформацію про місто, регіон, країну та координати IP
+  echo -e "${PINK}Локація вузла:${NC}"
   curl -s https://ipinfo.io | jq '.city, .region, .country, .loc'
 
   echo -e "${GREEN}✅ Ноду встановлено та запущено!${NC}"
-  exit 0
+  give_ack
 }
 
-# Функція для запуску ноди
-start_node() {
-  docker-compose exec blockcastd blockcastd init
-}
-
-# Функція для зупинки ноди
-stop_node() { 
-  cd beacon-docker-compose 
-  docker-compose down
-}
-
-# Функція для перевірки логів
 check_logs() {
+  echo -e "${PINK}Виведення логів...${NC}"
   docker logs blockcastd
+  give_ack
 }
 
-# Функція для видалення ноди
+update_node() {
+  echo -e "${PINK}Оновлення ноди...${NC}"
+  cd beacon-docker-compose || exit 1
+  git pull
+  docker-compose pull
+  docker-compose up -d
+  echo -e "${GREEN}✅ Оновлення завершено.${NC}"
+  give_ack
+}
+
 uninstall_node() {
-  cd beacon-docker-compose
+  echo -e "${RED}⚠ Видалення ноди...${NC}"
+  cd beacon-docker-compose || exit 1
   docker-compose down
   docker-compose rm -f
+  cd ..
   rm -rf beacon-docker-compose
+  echo -e "${GREEN}✅ Ноду повністю видалено.${NC}"
+  give_ack
 }
 
-# Основний код програми
-case "$1" in
-  install)
-    install_node
-    ;;
-  start)
-    start_node
-    ;;
-  stop)
-    stop_node
-    ;;
-  logs)
-    check_logs
-    ;;
-  uninstall)
-    uninstall_node
-    ;;
-  *)
-    echo "Неправильне використання. Використовуйте: $0 {install|start|stop|logs|uninstall}"
-    exit 1
-    ;;
-esac
+# --- Меню ---
+while true; do
+  animate_loading
+  CHOICE=$(whiptail --title "Меню керування Blockcast" \
+    --menu "Оберіть потрібну дію:" 20 70 10 \
+    "1" "Встановити вузол" \
+    "2" "Перевірити логи" \
+    "3" "Оновити вузол" \
+    "4" "Видалити вузол" \
+    "5" "Вихід" \
+    3>&1 1>&2 2>&3)
 
+  case $CHOICE in
+    1) install_node ;;
+    2) check_logs ;;
+    3) update_node ;;
+    4) uninstall_node ;;
+    5) echo "Вихід..."; exit 0 ;;
+    *) echo "Невідомий вибір..."; exit 1 ;;
+  esac
+done
