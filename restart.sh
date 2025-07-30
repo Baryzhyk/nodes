@@ -66,7 +66,7 @@ restart_process() {
     mkdir -p "$(dirname "$LOG_FILE")"
     touch "$LOG_FILE"
 
-    TEMP_SOURCE="/root/rl-swarm/modal-login/temp-data/logs"
+    TEMP_SOURCE="/root/rl-swarm/modal-login/temp-data/"
     TEMP_DEST="/root/rl-swarm/modal-login/temp-data"
 
     echo "[INFO] Підготовка тимчасових файлів..."
