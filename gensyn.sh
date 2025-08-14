@@ -102,22 +102,21 @@ download_node() {
   apt update -y && apt upgrade -y
   apt install -y git curl wget build-essential python3 python3-venv python3-pip screen yarn net-tools gnupg
 
-  curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | tee /usr/share/keyrings/yarnkey.gpg >/dev/null
-  echo "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-  curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-  apt update -y && apt install -y nodejs
+  # Node.js через nvm
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
   source ~/.bashrc
   nvm install 20.18.0
   nvm use 20.18.0
 
-  
   git clone https://github.com/gensyn-ai/rl-swarm
   cd rl-swarm
   python3 -m venv .venv
   source .venv/bin/activate
-  pip install -r requirements-cpu.txt
   pip install --upgrade pip
+  pip install -r requirements-cpu.txt
+
+  # Перевстановлення потрібних версій пакетів
+  pip install --force-reinstall transformers==4.51.3 trl==0.19.1
 
   export PYTORCH_ENABLE_MPS_FALLBACK=1
   export PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0
