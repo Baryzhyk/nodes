@@ -69,10 +69,10 @@ node --version
 echo -e "${YELLOW}Встановлюємо Java...${NC}"
 sudo apt install -y openjdk-8-jdk
 
+# Виконуємо source ~/.bashrc автоматично
+source ~/.bashrc
+
 # Вивід фінальної команди
 echo -e "${GREEN}=== Встановлення завершено! ===${NC}"
 echo -e "${YELLOW}Для запуску BlockAssist використовуйте команду:${NC}"
 echo -e "${GREEN}cd ~/blockassist && python run.py${NC}"
-echo ""
-echo -e "${YELLOW}Примітка: Можливо, знадобиться перезапустити термінал або виконати:${NC}"
-echo -e "${GREEN}source ~/.bashrc${NC}"
