@@ -57,33 +57,34 @@ fi
 cat >> "$WATCHDOG_SCRIPT" <<'EOF'
 }
 
+
 # Перезапуск процесу RL Swarm
 restart_process() {
     echo "[INFO] Перезапуск gensynnode..."
 
     screen -XS gensynnode quit
     
-   mkdir -p "$(dirname "$LOG_FILE")"
-touch "$LOG_FILE"
+    mkdir -p "$(dirname "$LOG_FILE")"
+    touch "$LOG_FILE"
 
-echo "[INFO] Перевірка наявності важливих файлів..."
+    echo "[INFO] Перевірка наявності важливих файлів..."
 
-if [ ! -f "/root/rl-swarm/modal-login/temp-data/userData.json" ]; then
-    echo "[WARN] /root/rl-swarm/modal-login/temp-data/userData.json не знайдено!"
-fi
+    if [ ! -f "/root/rl-swarm/modal-login/temp-data/userData.json" ]; then
+        echo "[WARN] /root/rl-swarm/modal-login/temp-data/userData.json не знайдено!"
+    fi
 
-if [ ! -f "/root/rl-swarm/modal-login/temp-data/userApiKey.json" ]; then
-    echo "[WARN] /root/rl-swarm/modal-login/temp-data/userApiKey.json не знайдено!"
-fi
+    if [ ! -f "/root/rl-swarm/modal-login/temp-data/userApiKey.json" ]; then
+        echo "[WARN] /root/rl-swarm/modal-login/temp-data/userApiKey.json не знайдено!"
+    fi
 
-cd "$PROJECT_DIR" || exit
-source .venv/bin/activate
+    cd "$PROJECT_DIR" || exit
+    source .venv/bin/activate
 
-echo "[INFO] Запускаємо процес у сесії screen..."
-screen -S gensynnode -d -m bash -c "trap '' INT; bash run_rl_swarm.sh 2>&1 | tee /root/rl-swarm/gensynnode.log"
+    echo "[INFO] Запускаємо процес у сесії screen..."
+    screen -S gensynnode -d -m bash -c "trap '' INT; bash run_rl_swarm.sh 2>&1 | tee /root/rl-swarm/gensynnode.log"
 
-echo "[INFO] Процес запущено, лог: $LOG_FILE"
-sleep 5
+    echo "[INFO] Процес запущено, лог: $LOG_FILE"
+    sleep 5
 
     echo "[INFO] Очікуємо завершення встановлення..."
 
@@ -95,11 +96,12 @@ sleep 5
         sleep 1
     done
 
-    echo "[INFO] Очікуємо питання про Hugging Face Hub..."
+    # КРОК 1: Перше питання [y/N] - відповідь N
+    echo "[INFO] Очікуємо перше питання про Hugging Face Hub [y/N]..."
     for i in {1..60}; do
         LOG_TAIL=$(tail -n 10 "$LOG_FILE" 2>/dev/null || echo "")
         if echo "$LOG_TAIL" | grep -q "\[y/N\]"; then
-            echo "[INFO] Виявлено запит [y/N], відправляємо 'N'"
+            echo "[INFO] Виявлено перше запитання [y/N], відправляємо 'N'"
             screen -S gensynnode -X stuff "N$(echo -ne '\r')"
             sleep 3
             break
@@ -107,14 +109,13 @@ sleep 5
         sleep 1
     done
 
-    echo "[INFO] Очікуємо запит про назву моделі..."
+    # КРОК 2: Друге питання (модель) - відповідь Enter
+    echo "[INFO] Очікуємо друге питання (модель)..."
     FOUND_MODEL_QUESTION=false
 
     for i in {1..120}; do
         LOG_TAIL=$(tail -n 20 "$LOG_FILE" 2>/dev/null || echo "")
         echo "[DEBUG] Спроба $i/120, перевірка логу..."
-        echo "[DEBUG] Останні 3 рядки:"
-        tail -n 3 "$LOG_FILE" 2>/dev/null || echo "Немає логу"
 
         if echo "$LOG_TAIL" | grep -qi "enter the name of the model"; then
             echo "[INFO] Виявлено 'enter the name of the model' — натискаємо Enter"
@@ -155,6 +156,24 @@ sleep 5
         echo "[WARN] Запит про модель не знайдено, натискаємо Enter як запасний варіант"
         screen -S gensynnode -X stuff "$(echo -ne '\r')"
     fi
+
+    # КРОК 3: Третє питання [y/N] - відповідь N
+    echo "[INFO] Очікуємо третє питання [y/N]..."
+    for i in {1..60}; do
+        LOG_TAIL=$(tail -n 10 "$LOG_FILE" 2>/dev/null || echo "")
+        if echo "$LOG_TAIL" | grep -q "\[y/N\]"; then
+            echo "[INFO] Виявлено третє запитання [y/N], відправляємо 'N'"
+            screen -S gensynnode -X stuff "N$(echo -ne '\r')"
+            sleep 3
+            break
+        fi
+        sleep 1
+    done
+
+    # Фінальний Enter для підтвердження
+    echo "[INFO] Натискаємо фінальний Enter..."
+    screen -S gensynnode -X stuff "$(echo -ne '\r')"
+    sleep 2
 
     send_telegram_alert
 }
